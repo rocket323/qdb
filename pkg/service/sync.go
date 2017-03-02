@@ -312,6 +312,7 @@ func (h *Handler) parseFullResyncReply(resp string) (string, int64) {
 
 func (h *Handler) readSyncRDBSize(c *conn) (int64, error) {
 	// wait rdb size line
+    // TODO we need to set longer timeout
 	line, err := c.readLine()
 	if err != nil {
 		return 0, errors.Trace(err)
