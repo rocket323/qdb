@@ -9,7 +9,7 @@ import (
 )
 
 type Iterator struct {
-    db *BCask
+    db *BitCask
     err error
     iter *bcask.Iterator
 }
