@@ -17,7 +17,7 @@ type Iterator struct {
 func newIterator(db *BitCask, snap *Snapshot) *Iterator {
     return &Iterator {
         db: db,
-        iter: db.bc.NewIterator(),
+        iter: db.bc.NewIterator(snap.snap),
     }
 }
 
