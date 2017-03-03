@@ -21,6 +21,9 @@ build_rocksdb:
 build_goleveldb:
 	$(GO) build -o bin/qdb-server ./cmd/qdb-server  
 
+build_bitcask:
+	$(GO) build -tags 'bitcask' -o bin/qdb-server ./cmd/qdb-server
+
 clean:
 	$(GO) clean -i ./...
 	rm -rf bin/* var/*

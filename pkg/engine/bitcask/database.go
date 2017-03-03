@@ -3,8 +3,10 @@
 package bitcask
 
 import (
-    "bytes"
     "fmt"
+    "os"
+    "github.com/juju/errors"
+    "github.com/reborndb/qdb/pkg/engine"
     bcask "github.com/rocket323/bitcask"
 )
 
@@ -14,12 +16,17 @@ type BitCask struct {
     opts    *bcask.Options
 }
 
+var (
+    ErrNotSupported = fmt.Errorf("not supported")
+)
+
 func Open(path string, conf *Config, repair bool) (*BitCask, error) {
     db := &BitCask{}
-    if err := db.init(path, config, repair); err != nil {
+    if err := db.init(path, conf, repair); err != nil {
         db.Close()
         return nil, errors.Trace(err)
     }
+    return db, nil
 }
 
 func (db *BitCask) init(path string, conf *Config, repair bool) error {
@@ -33,15 +40,15 @@ func (db *BitCask) init(path string, conf *Config, repair bool) error {
     }
 
     opts := bcask.NewOptions()
-    opts.SetMaxFileSize(conf.MaxFileSize)
-    opts.SetMaxOpenFiles(conf.MaxOpenFiles)
+    opts.SetMaxFileSize(int64(conf.MaxFileSize))
+    opts.SetMaxOpenFiles(int32(conf.MaxOpenFiles))
 
     db.path = path
     db.opts = opts
 
     var err error
     if db.bc, err = bcask.Open(db.path, db.opts); err != nil {
-        return erros.Trace(err)
+        return errors.Trace(err)
     }
     return nil
 }
@@ -53,7 +60,7 @@ func (db *BitCask) Clear() error {
         // destroy and reopen database
         if err := bcask.DestroyDatabase(db.path); err != nil {
             return errors.Trace(err)
-        } else db.bc, err = bcask.Open(db.path, db.opts); err != nil {
+        } else if db.bc, err = bcask.Open(db.path, db.opts); err != nil {
             return errors.Trace(err)
         }
     }
@@ -66,16 +73,12 @@ func (db *BitCask) Close() {
     }
 }
 
-func (db *BitCask) NewIterator() engine.Iterator {
-    return newIterator(db, nil)
-}
-
 func (db *BitCask) NewSnapshot() engine.Snapshot {
     return newSnapshot(db)
 }
 
 func (db *BitCask) Get(key []byte) ([]byte, error) {
-    value, err := db.bc.Get(key)
+    value, err := db.bc.Get(string(key))
     return value, errors.Trace(err)
 }
 
@@ -83,19 +86,29 @@ func (db *BitCask) Commit(bt *engine.Batch) error {
     if bt.OpList.Len() == 0 {
         return nil
     }
-    wb := bcask.NewWriteBatch()
-    defer wb.Close()
+    var err error
     for e := bt.OpList.Front(); e != nil; e = e.Next() {
-        switch op := e.Value().(type) {
+        switch op := e.Value.(type) {
         case *engine.BatchOpSet:
-            wb.Put(op.Key, op.Value)
+            err = db.bc.Set(string(op.Key), op.Value)
+            if err != nil {
+                return err
+            }
         case *engine.BatchOpDel:
-            wb.Delete(op.Key)
+            err = db.bc.Del(string(op.Key))
+            if err != nil {
+                return err
+            }
         default:
             panic(fmt.Sprintf("unsupported batch operation: %+v", op))
         }
     }
-    return errors.Trace(db.bc.Write(wb))
+    return nil
+}
+
+func (db *BitCask) NewIterator() engine.Iterator {
+    panic("not supported")
+    return nil
 }
 
 func (db *BitCask) Compact(start, limit []byte) error {

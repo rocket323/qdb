@@ -22,6 +22,7 @@ import (
 	"github.com/reborndb/qdb/pkg/engine/goleveldb"
 	"github.com/reborndb/qdb/pkg/engine/leveldb"
 	"github.com/reborndb/qdb/pkg/engine/rocksdb"
+    "github.com/reborndb/qdb/pkg/engine/bitcask"
 	"github.com/reborndb/qdb/pkg/service"
 	"github.com/reborndb/qdb/pkg/store"
 )
@@ -44,6 +45,7 @@ type Config struct {
 	LevelDB   *leveldb.Config   `toml:"leveldb"`
 	RocksDB   *rocksdb.Config   `toml:"rocksdb"`
 	GoLevelDB *goleveldb.Config `toml:"goleveldb"`
+    BitCaskDB *bitcask.Config   `toml:bitcask`
 }
 
 func (c *Config) LoadFromFile(path string) error {
@@ -71,8 +73,7 @@ func setIntFromOpt(dest *int, d map[string]interface{}, key string) {
 			log.Fatalf("parse %s failed - %s", key, err)
 		} else {
 			*dest = n
-		}
-	}
+		} }
 }
 
 func main() {
@@ -170,6 +171,8 @@ Options:
 		dbConf = conf.RocksDB
 	case "goleveldb":
 		dbConf = conf.GoLevelDB
+    case "bitcask":
+        dbConf = conf.BitCaskDB
 	}
 
 	db, err = engine.Open(conf.DBType, conf.DBPath, dbConf, args.repair)

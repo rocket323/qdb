@@ -1,16 +1,15 @@
 // +build all bitcask
 
-package bcask
+package bitcask
 
 import (
-    "github.com/juju/errors"
     "github.com/reborndb/qdb/pkg/engine"
     bcask "github.com/rocket323/bitcask"
 )
 
 type Snapshot struct {
     db *BitCask
-    snap *bitcask.Snapshot
+    snap *bcask.Snapshot
 }
 
 func newSnapshot(db *BitCask) *Snapshot {
@@ -30,7 +29,6 @@ func (sp *Snapshot) NewIterator() engine.Iterator {
 }
 
 func (sp *Snapshot) Get(key []byte) ([]byte, error) {
-    value, err := sp.db.bc.Get(sp.snap, key)
-    return value, errors.Trace(err)
+    panic("not supported")
 }
 

@@ -3,21 +3,19 @@
 package bitcask
 
 import (
-    "github.com/juju/errors"
-    "github.com/reborndb/qdb/pkg/engine"
     bcask "github.com/rocket323/bitcask"
 )
 
 type Iterator struct {
     db *BitCask
     err error
-    iter *bcask.Iterator
+    iter *bcask.SnapshotIter
 }
 
 func newIterator(db *BitCask, snap *Snapshot) *Iterator {
     return &Iterator {
         db: db,
-        iter: db.bc.NewIterator(snap.snap),
+        iter: snap.snap.NewSnapshotIter(),
     }
 }
 
@@ -25,16 +23,8 @@ func (it *Iterator) Close() {
     it.iter.Close()
 }
 
-func (it *Iterator) SeekTo(key []byte) []byte {
-    return it.iter.Seek(key)
-}
-
 func (it *Iterator) SeekToFirst() {
     it.iter.SeekToFirst()
-}
-
-func (it *Iterator) SeekToLast() {
-    it.iter.SeekToLast()
 }
 
 func (it *Iterator) Valid() bool {
@@ -43,10 +33,6 @@ func (it *Iterator) Valid() bool {
 
 func (it *Iterator) Next() {
     it.iter.Next()
-}
-
-func (it *Iterator) Prev() {
-    it.iter.Prev()
 }
 
 func (it *Iterator) Key() []byte {
@@ -58,11 +44,19 @@ func (it *Iterator) Value() []byte {
 }
 
 func (it *Iterator) Error() error {
-    if it.err == nil {
-        if err := it.iter.GetError(); err != nil {
-            it.err = errors.Trace(err)
-        }
-    }
     return it.err
+}
+
+func (it *Iterator) SeekTo(key []byte) []byte {
+    it.err = ErrNotSupported
+    return nil
+}
+
+func (it *Iterator) SeekToLast() {
+    it.err = ErrNotSupported
+}
+
+func (it *Iterator) Prev() {
+    it.err = ErrNotSupported
 }
 
