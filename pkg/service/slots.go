@@ -99,9 +99,9 @@ func SlotsHashKeyCmd(s Session, args [][]byte) (redis.Resp, error) {
 func init() {
 	Register("slotshashkey", SlotsHashKeyCmd, CmdReadonly)
 	Register("slotsinfo", SlotsInfoCmd, CmdReadonly)
-	Register("slotsmgrtone", SlotsMgrtOneCmd, CmdWrite)
-	Register("slotsmgrtslot", SlotsMgrtSlotCmd, CmdWrite)
-	Register("slotsmgrttagone", SlotsMgrtTagOneCmd, CmdWrite)
-	Register("slotsmgrttagslot", SlotsMgrtTagSlotCmd, CmdWrite)
-	Register("slotsrestore", SlotsRestoreCmd, CmdWrite)
+	Register("slotsmgrtone", SlotsMgrtOneCmd, CmdWrite | CmdNoOrder)
+	Register("slotsmgrtslot", SlotsMgrtSlotCmd, CmdWrite | CmdNoOrder)
+	Register("slotsmgrttagone", SlotsMgrtTagOneCmd, CmdWrite | CmdNoOrder)
+	Register("slotsmgrttagslot", SlotsMgrtTagSlotCmd, CmdWrite | CmdNoOrder)
+	Register("slotsrestore", SlotsRestoreCmd, CmdWrite | CmdNoOrder)
 }

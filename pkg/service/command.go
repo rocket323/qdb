@@ -50,6 +50,7 @@ type CommandFlag uint32
 const (
 	CmdWrite CommandFlag = 1 << iota
 	CmdReadonly
+    CmdNoOrder
 )
 
 func Register(name string, f CommandFunc, flag CommandFlag) {

@@ -25,6 +25,10 @@ type GoLevelDB struct {
 	wopt *opt.WriteOptions
 }
 
+func (db *GoLevelDB) IsKeyOrdered() bool {
+    return true
+}
+
 func Open(path string, conf *Config, repair bool) (*GoLevelDB, error) {
 	db := &GoLevelDB{}
 	if err := db.init(path, conf, repair); err != nil {

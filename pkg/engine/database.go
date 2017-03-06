@@ -12,4 +12,6 @@ type Database interface {
 	Compact(start, limit []byte) error
 	Get(key []byte) ([]byte, error)
 	Stats() string
+    IsKeyOrdered() bool
 }
+

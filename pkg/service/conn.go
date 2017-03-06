@@ -149,6 +149,11 @@ func (c *conn) dispatch(h *Handler, request redis.Resp) (redis.Resp, error) {
 			return toRespErrorf("READONLY You can't write against a read only slave.")
 		}
 
+        if f.flag & CmdWrite > 0 && f.flag & CmdNoOrder == 0 && !h.store.IsKeyOrdered() {
+            // cmd need key ordered, but store engine doesn't support it.
+            return toRespErrorf("store engine doesn't support key order.")
+        }
+
 		return f.f(c, args)
 	}
 }

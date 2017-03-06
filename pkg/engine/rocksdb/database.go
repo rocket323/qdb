@@ -29,6 +29,10 @@ type RocksDB struct {
 	snapshotFillCache bool
 }
 
+func (db *RocksDB) IsKeyOrdered() bool {
+    return true
+}
+
 func Open(path string, conf *Config, repair bool) (*RocksDB, error) {
 	db := &RocksDB{}
 	if err := db.init(path, conf, repair); err != nil {

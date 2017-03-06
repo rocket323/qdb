@@ -25,6 +25,10 @@ type LevelDB struct {
 	bloom *levigo.FilterPolicy
 }
 
+func (db *LevelDB) IsKeyOrdered() bool {
+    return true
+}
+
 func Open(path string, conf *Config, repair bool) (*LevelDB, error) {
 	db := &LevelDB{}
 	if err := db.init(path, conf, repair); err != nil {

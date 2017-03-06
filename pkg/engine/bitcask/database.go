@@ -20,6 +20,10 @@ var (
     ErrNotSupported = fmt.Errorf("not supported")
 )
 
+func (db *BitCask) IsKeyOrdered() bool {
+    return false
+}
+
 func Open(path string, conf *Config, repair bool) (*BitCask, error) {
     db := &BitCask{}
     if err := db.init(path, conf, repair); err != nil {

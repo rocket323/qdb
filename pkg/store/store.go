@@ -85,6 +85,10 @@ func (s *Store) commit(bt *engine.Batch, fw *Forward) error {
 	return nil
 }
 
+func (s *Store) IsKeyOrdered() bool {
+    return s.db.IsKeyOrdered()
+}
+
 func (s *Store) getRowValue(key []byte) ([]byte, error) {
 	return s.db.Get(key)
 }
