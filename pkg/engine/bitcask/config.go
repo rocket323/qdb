@@ -4,7 +4,7 @@ import "github.com/reborndb/go/bytesize"
 
 type Config struct {
     MaxFileSize         int `toml:max_file_size`
-    MaxOpenFiles        int `toml:max_open_file`
+    MaxOpenFiles        int `toml:max_open_files`
 }
 
 func NewDefaultConfig() *Config {

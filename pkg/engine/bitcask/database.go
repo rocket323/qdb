@@ -79,6 +79,9 @@ func (db *BitCask) NewSnapshot() engine.Snapshot {
 
 func (db *BitCask) Get(key []byte) ([]byte, error) {
     value, err := db.bc.Get(string(key))
+    if err == bcask.ErrNotFound {
+        err = nil
+    }
     return value, errors.Trace(err)
 }
 
@@ -116,6 +119,6 @@ func (db *BitCask) Compact(start, limit []byte) error {
 }
 
 func (db *BitCask) Stats() string {
-    return ""
+    return "bitcask engine"
 }
 
